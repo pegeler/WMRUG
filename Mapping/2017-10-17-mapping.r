@@ -251,12 +251,6 @@ state_choropleth(df_pop_state,
 # Set working directory to location where shapefiles are stored
 setwd("~/ext_home/GIS DataBase/TIGER")
 
-## Counties
-# Find out the fips code for MI for subsetting purposes
-state.fips[state.fips$abb == "MI",]
-shp.cnty = readOGR("CB/Counties/cb_2015_us_county_20m.shp") %>%
-  subset(STATEFP == 26)
-
 ## States
 shp.state = readOGR("CB/Counties/cb_2015_us_county_20m.shp")
 
@@ -266,45 +260,16 @@ shp.urb = readOGR("CB/Urban Areas/cb_2015_us_ua10_500k.shp")
 ## Primary and secondary roads
 shp.roads = readOGR("Roads/PriSec/tl_2016_26_prisecroads.shp")
 
-## Grab some unemployment data from BLS to add to our county shapefile ----
-unemployment = read.fwf(
-  "http://www.bls.gov/lau/laucnty15.txt",
-  skip = 6,
-  n = 3219,
-  widths = diff(c(0,16,21,29,80,86,100,115,125,132)+1),
-  col.names = c(
-    "LAUS.code",
-    "STATEFP",
-    "COUNTYFP",
-    "County.Name",
-    "Year",
-    "Labor.Force",
-    "Employed",
-    "Unemp.Lvl",
-    "Unemp.Rate"
-  ),
-  colClasses = c(
-    "character",
-    "character",
-    "character",
-    "character",
-    "integer",
-    "character",
-    "character",
-    "character",
-    "numeric"
-  )
-)
+## Counties
+# Find out the fips code for MI for subsetting purposes
+state.fips[state.fips$abb == "MI",]
+shp.cnty = readOGR("CB/Counties/cb_2015_us_county_20m.shp") %>%
+  subset(STATEFP == 26)
 
-unemployment[which(sapply(unemployment, class) == "character")] %<>%
-  sapply(trimws)
-
-unemployment %<>% subset(STATEFP == "26")
-
-unemployment[,6] %<>% gsub(",","",.) %>% as.integer
-unemployment[,7] %<>% gsub(",","",.) %>% as.integer
-unemployment[,8] %<>% gsub(",","",.) %>% as.integer
-
+# Get the unemployment data from my `unemployment` package and merge
+# If you don't have it, use devtools to install
+# devtools::install_github("pegeler/unemployment")
+data("unemployment", package = "unemployment")
 shp.cnty %<>% merge(unemployment, by = c("STATEFP","COUNTYFP"))
 
 shp.cnty@data %>% head
