@@ -270,7 +270,7 @@ shp.cnty = readOGR("CB/Counties/cb_2015_us_county_20m.shp") %>%
 # If you don't have it, use devtools to install
 # devtools::install_github("pegeler/unemployment")
 data("unemployment", package = "unemployment")
-shp.cnty %<>% merge(unemployment, by = c("STATEFP","COUNTYFP"))
+shp.cnty %<>% merge(subset(unemployment, Year == 2016), by = c("STATEFP","COUNTYFP"))
 
 shp.cnty@data %>% head
 
@@ -344,7 +344,7 @@ raster::text(
   hw = 0.08
 )
 
-text(x = -85.5, y = 48, "Michigan Unemployment 2015", cex = 6)
+text(x = -85.5, y = 48, "Michigan Unemployment 2016", cex = 6)
 
 # Final border
 rect(
