@@ -1,12 +1,19 @@
+# fibonacci.r
+# Exploring Code Optimization through the Fibonacci Sequence
+#
+# Paul W. Egeler, M.S., GStat
+# 22 Dec 2017
+#
+# Inspired by Dirk Eddelbuettel's Rcpp book
 library(Rcpp)
 
-# Define a test function --------------------------------------------------
+# Define a verification function --------------------------------------------
 
-test_fib <- function(FUN) {
-  fib_vec <- Vectorize(FUN, "n")
+verify_results <- function(FUN) {
+  FUN_vec <- Vectorize(FUN, "n")
   
   identical(
-    as.integer(fib_vec(1:10)),
+    as.integer(FUN_vec(1:10)),
     c(1L, 1L, 2L, 3L, 5L, 8L, 13L, 21L, 34L, 55L)
   )
 }
@@ -20,7 +27,7 @@ fibR_rec <- function(n) {
   sys.function()(n - 1) + sys.function()(n - 2)
 }
 
-test_fib(fibR_rec)
+verify_results(fibR_rec)
 
 # C++
 cppFunction("
@@ -33,31 +40,14 @@ int fibCpp_rec(const int n) {
 }"
 )
 
-test_fib(fibCpp_rec)
+verify_results(fibCpp_rec)
 
 microbenchmark::microbenchmark(
   fibR_rec(10),
-  fibR_rec(20),
   fibCpp_rec(10),
+  fibR_rec(20),
   fibCpp_rec(20)
 )
-
-# Memoized function --------------------------------------------------------
-# R
-fibR_mem <- local({
-  fib_seq <- c(1,1,rep(NA, 1000))
-  f <- function(n) {
-    
-    if(is.na(fib_seq[n])) {
-      f(n - 1) + f(n - 2)
-    }
-    
-    return(fib_seq[n])
-  }
-})
-
-fib_mem(3)
-
 
 # Iterative function ------------------------------------------------------
 # R
@@ -89,8 +79,8 @@ fibR_it2 <- function(n) {
 }
 
 
-test_fib(fibR_it1)
-test_fib(fibR_it2)
+verify_results(fibR_it1)
+verify_results(fibR_it2)
 
 # C++
 cppFunction("
@@ -112,7 +102,7 @@ return c;
 }
 ")
 
-test_fib(fibCpp_it)
+verify_results(fibCpp_it)
 
 microbenchmark::microbenchmark(
   fibR_it1(10),
