@@ -15,7 +15,7 @@ output:
 
 The power of Rcpp comes from the fact the C++ code has a fundamentally different *modus operandi* than R. That is, C++ is compiled whereas R is interpreted. Understanding this difference is the key to understanding why an R user might want to rewrite parts of their code in an compiled language---namely that it will most likely run much faster. Leveraging C++ code at workflow bottlenecks is a great way to speed things up!
 
-## Scripts versus Compiled Code
+## Scripts versus compiled code
 
 This talk is too high-level of a view to get into the gritty details, but here are the broad-brush definitions:
 
@@ -39,7 +39,7 @@ Examples:
 
 *__Note__: These definitions are somewhat fluid. Examples are based on common usage of each language.*
 
-### Compiling Code (outside of R)
+### Compiling code (outside of R)
 
 If you have a compiler, creating object code is easy (but can get complicated!). Here is an example of how we turn a C++ source code file into a machine-readable binary program:
 
@@ -60,7 +60,7 @@ Now we can call that program:
 ##  3 2 1
 ```
 
-### Quick Sys-reqs Note
+### Quick sys-reqs note
 
 Essentially, **R** is a **scripting language** and **`C`**/**`C++`** are **compiled languages**. This means that we can run any R code in an interpreter without any special preparation. However, any C++ code we make must be compiled first into machine-readable instructions specific to our chip architecture. To do this, we need a special tool called a *compiler*. Standard Windows and Mac installs don't tend to have one handy---this is why you download Windows binaries from CRAN by default. 
 
@@ -79,11 +79,47 @@ If this returns `FALSE`{.r}, go download Rtools or Xcode for Win or Mac, respect
 
 ## R-specific C++ object classes
 
-## C-R API
+## Getting compiled code into your R scripts
+
+### C-R API
 
 TL;DR: Don't use it. The Rcpp API is a much easier way to write `C`/`C++` code for R. The exception might be if you are maintaining old code that is already in this ecosystem.
 
-## The Rcpp API 
+### The Rcpp API 
+
+#### Prototyping and Packaging
+
+You can prototype C++ code very easily using Rcpp. There are two ways you should be aware of:
+
+- `Rcpp::cppFunction()`{.r}
+    - Create functions in an interactive session.
+    - The function takes a character string which is a C++ function definition.
+    - Example [below](#a-basic-function)
+- `Rcpp::sourceCpp()`{.r}
+    - Much like `base::source()`{.r} but with C++ code
+    - Also can be called interactively, but expects a separate file with (almost) pure C++ source code.
+    - Rstudio has some cool features here. (We will do a live demo together.)
+
+Once you have some solid functions, you might want to create a package to house and share them. The power of Rcpp really starts to shine when you start creating packages with it. After all, the idea of using compiled code in your R scripts is that it can help solve some speed bottlenecks. You are probably not going to optimize your code to be blazing-fast for a one-off problem. Therefore, this is code that you will probably want to recycle. You can use `Rcpp::Rcpp.package.skeleton()`{.r} to create a new package skeleton with some Rcpp niceties built in. Meanwhile, you can use `devtools::use_rcpp()`{.r} to add those niceties to an existing package. RcppArmadillo has `RcppArmadillo::RcppArmadillo.package.skeleton()`{.r} as well if you are interested in using the Armadillo C++ linear algebra library.
+
+#### A basic function
+
+```{r}
+Rcpp::cppFunction('
+void Hello_World (Rcpp::StringVector my_input) 
+{
+  Rcpp::Rcout << "Hello " << my_input(0) << "!";
+}
+')
+
+Hello_World("WMRUG attendees")
+```
+
+
+#### 
+
+### Data Structures
+
 
 ## Demonstrations
 

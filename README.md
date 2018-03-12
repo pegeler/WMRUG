@@ -1,7 +1,7 @@
 West Michigan R Users Group Code and Materials
 ==============================================
 
-These materials were used in the West Michigan R Users Group meetups.
+These materials are my contributions to the [West Michigan R Users Group](https://www.meetup.com/West-Michigan-R-Users-Group/) meetups. See the [main WMRUG github account](https://github.com/WestMichiganRUserGroup) for more code and presentations.
 
 Contents
 --------
