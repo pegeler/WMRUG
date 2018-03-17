@@ -3,17 +3,15 @@ title: "High Performance Code with Rcpp"
 author: "Paul W. Egeler, M.S., GStat"
 date: "20 Mar 2018"
 output:
-  md_document:
-    variant: markdown_github
-  html_notebook:
-    number_sections: yes
+  html_document:
+    number_sections: no
     toc: yes
     toc_float: yes
 ---
 
 ## Why use Rcpp?
 
-The power of Rcpp comes from the fact the C++ code has a fundamentally different *modus operandi* than R. That is, C++ is compiled whereas R is interpreted. Understanding this difference is the key to understanding why an R user might want to rewrite parts of their code in an compiled language---namely that it will most likely run much faster. Leveraging C++ code at workflow bottlenecks is a great way to speed things up!
+The power of Rcpp comes from the fact the C++ code has a fundamentally different *modus operandi* than R. That is, `C++` is *compiled* whereas R is *interpreted*. Understanding this difference is the key to understanding why an R user might want to rewrite parts of their code in an compiled language---namely that it will most likely run much faster. Leveraging `C++` code at workflow bottlenecks is a great way to speed things up!
 
 ## Scripts versus compiled code
 
@@ -41,9 +39,10 @@ Examples:
 
 ### Compiling code (outside of R)
 
-If you have a compiler, creating object code is easy (but can get complicated!). Here is an example of how we turn a C++ source code file into a machine-readable binary program:
+If you have a compiler, creating object code is easy (but can get complicated!). Here is an example of how we turn a `C++` source code file into a machine-readable binary program. From the terminal:
 
 ```bash
+# Compile C++ source file to binary program
 g++ heaps.cpp -o heaps
 ```
 
@@ -62,9 +61,9 @@ Now we can call that program:
 
 ### Quick sys-reqs note
 
-Essentially, **R** is a **scripting language** and **`C`**/**`C++`** are **compiled languages**. This means that we can run any R code in an interpreter without any special preparation. However, any C++ code we make must be compiled first into machine-readable instructions specific to our chip architecture. To do this, we need a special tool called a *compiler*. Standard Windows and Mac installs don't tend to have one handy---this is why you download Windows binaries from CRAN by default. 
+**R** is a *scripting* language and **`C`**/**`C++`** are *compiled* languages. This means that we can run any R code in an interpreter without any special preparation. However, any `C++` code we make must be compiled first into machine-readable instructions specific to our chip architecture. To do this, we need a special tool called a *compiler*. Standard Windows and Mac installs don't tend to have one handy---this is one reason why you download Windows binaries from CRAN by default. 
 
-If you are a Windows user, you will probably need [Rtools](https://cran.r-project.org/bin/windows/Rtools/) to play along. Mac users need Xcode (I think). [`devtools`]() will let us know if we have everything we need:
+If you are a Windows user, you will probably need [Rtools](https://cran.r-project.org/bin/windows/Rtools/) to play along. Mac users need Xcode (I think). [`devtools`](https://github.com/r-lib/devtools) will let us know if we have everything we need. From R:
 
 ```{r}
 # Check to make sure we have everything we need
@@ -73,13 +72,36 @@ devtools::has_devel()
 
 If this returns `FALSE`{.r}, go download Rtools or Xcode for Win or Mac, respectively.
 
-## Basic C++ syntax
+## Basic `C++` syntax
 
+`C++` syntax is different from R in many ways. However, the Rcpp API helps a lot to make `C++` code feel more R-like. This is not the venue to go over all the details of the `C++` language, but we will do a classic 'Hello World' example so you can get the flavor.
 
+The contents of our *`hello.cpp`*:
+```c++
+// hello.cpp: A Hello World program for C++
+// The next line is a preprocessor directive, kind of like R's `library()`.
+#include <stdio.h>
 
-## R-specific C++ object classes
+/* This is a multi-line comment. */
+int main (void) 
+{
+  printf("Hello world!\n");
+  return 0;
+}
+```
 
-## Getting compiled code into your R scripts
+And then from the terminal:
+
+```bash
+# Compile our program
+g++ hello.cpp -o hello
+
+# Call our program
+hello
+## Hello world!
+```
+
+## Compiled code in your R scripts
 
 ### C-R API
 
@@ -87,28 +109,35 @@ TL;DR: Don't use it. The Rcpp API is a much easier way to write `C`/`C++` code f
 
 ### The Rcpp API 
 
-#### Prototyping and Packaging
+#### Workflow
 
-You can prototype C++ code very easily using Rcpp. There are two ways you should be aware of:
+##### Prototyping
+
+You can prototype `C++` code very easily using Rcpp. There are two ways you should be aware of:
 
 - `Rcpp::cppFunction()`{.r}
     - Create functions in an interactive session.
-    - The function takes a character string which is a C++ function definition.
-    - Example [below](#a-basic-function)
+    - The function takes a character string which is a `C++` function definition.
+    - Example [below](#a-basic-function).
 - `Rcpp::sourceCpp()`{.r}
-    - Much like `base::source()`{.r} but with C++ code
-    - Also can be called interactively, but expects a separate file with (almost) pure C++ source code.
+    - Much like `base::source()`{.r} but with `C++` code.
+    - Also can be called interactively, but expects a separate file with (almost) pure `C++` source code.
     - Rstudio has some cool features here. (We will do a live demo together.)
 
-Once you have some solid functions, you might want to create a package to house and share them. The power of Rcpp really starts to shine when you start creating packages with it. After all, the idea of using compiled code in your R scripts is that it can help solve some speed bottlenecks. You are probably not going to optimize your code to be blazing-fast for a one-off problem. Therefore, this is code that you will probably want to recycle. You can use `Rcpp::Rcpp.package.skeleton()`{.r} to create a new package skeleton with some Rcpp niceties built in. Meanwhile, you can use `devtools::use_rcpp()`{.r} to add those niceties to an existing package. RcppArmadillo has `RcppArmadillo::RcppArmadillo.package.skeleton()`{.r} as well if you are interested in using the Armadillo C++ linear algebra library.
+##### Packaging 
+
+Once you have some solid functions, you might want to create a package to house and share them. The power of Rcpp really starts to shine when you start creating packages with it. After all, the idea of using compiled code in your R scripts is that it can help solve some speed bottlenecks. You are probably not going to optimize your code to be blazing-fast for a one-off problem. Therefore, this is code that you will probably want to recycle. 
+
+You can use `Rcpp::Rcpp.package.skeleton()`{.r} to create a new package skeleton with some Rcpp niceties built in. Meanwhile, you can use `devtools::use_rcpp()`{.r} to add those niceties to an existing package. RcppArmadillo has `RcppArmadillo::RcppArmadillo.package.skeleton()`{.r} as well if you are interested in using the Armadillo `C++` linear algebra library.
 
 #### A basic function
 
 ```{r}
 Rcpp::cppFunction('
-void Hello_World (Rcpp::StringVector my_input) 
+void Hello_World (std::string my_input) 
 {
-  Rcpp::Rcout << "Hello " << my_input(0) << "!";
+  // This will write to the R console.
+  Rcpp::Rcout << "Hello " << my_input << "!";
 }
 ')
 
@@ -116,10 +145,33 @@ Hello_World("WMRUG attendees")
 ```
 
 
-#### 
+#### Another basic function
 
-### Data Structures
+```{r}
+Rcpp::cppFunction('
+Rcpp::NumericVector calc_hypotenuse (Rcpp::NumericVector a, Rcpp::NumericVector b) 
+{
+  // All variables must be "declared" before use
+  Rcpp::NumericVector c;
+  
+  // Use `=` instead of `<-` for assignment
+  c = sqrt(pow(a,2) + pow(b,2));
 
+  // You must always explicitly return the value with the `return` keyword
+  return c;
+}
+')
+
+calc_hypotenuse(1:3, 1:3)
+```
+
+### Data structures
+
+You need to know the equivalent Rcpp `C++` data structure to the R data structure that you are working with. Since all variables are declared in `C++`, you cannot rely on implied data types or coersion.
+
+### Syntactic sugar
+
+As I mentioned before, Rcpp adds a lot of syntactic sugar to make `C++` feel more like R. For example, Rcpp uses *operator overloading* to vectorize mathematical and logical operations. Many of your favorite functions are also made available through Rcpp's `C++` library.
 
 ## Demonstrations
 
@@ -137,7 +189,7 @@ $$
 
 So the first 10 numbers of the sequence will be $1,1,2,3,5,8,13,21,34,55$.
 
-This is fun because it is recursive. Therefore a programmer may take a recursive, memoized, or iterative approach to solving. We can use this to compare R and C++ under different conditions.
+This is fun because it is recursive. Therefore a programmer may take a recursive, memoized, or iterative approach to solving. We can use this to compare R and `C++` under different conditions.
 
 First, let's define a function to verify that our outputs are correct:
 
@@ -165,7 +217,7 @@ fibR_rec <- function(n) {
 }
 ```
 
-Then in C++:
+Then in `C++`:
 
 ```{r}
 Rcpp::cppFunction("
@@ -196,7 +248,7 @@ microbenchmark::microbenchmark(
 )
 ```
 
-OK, so the C++ wins here. This is because there is a lot of overhead to all those recursive function calls in R. Less so in C++. You will find that `for` loops and recursive function calls are usually the bottlenecks in your R code. If you cannot vectorize them somehow, you might want to think about making a C++ function to speed things up.
+OK, so the `C++` wins here. This is because there is a lot of overhead to all those recursive function calls in R. Less so in `C++`. You will find that `for` loops and recursive function calls are usually the bottlenecks in your R code. If you cannot vectorize them somehow, you might want to think about making a `C++` function to speed things up.
 
 #### Iterative
 
@@ -219,25 +271,22 @@ fibR_it <- function(n) {
 ```
 
 
-In C++...
+In `C++`...
 
 ```{r}
 Rcpp::cppFunction("
 int fibCpp_it(const int n) 
 {
-if (n <= 2) return 1;
-
 int a = 0, b = 1, c = 0;
 
-for (int i=1; i<n; i++)
+for (int i=0; i<n; i++)
 {
   c = a + b;
   a = b;
   b = c;
 }
 
-return c;
-
+return a;
 }
 ")
 ```
@@ -258,7 +307,7 @@ microbenchmark::microbenchmark(
 )
 ```
 
-Hmm. Suddenly the C++ code is lagging. This is probably because assignment is highly optimized in R and there is some overhead to calling the C++ function. Let's do it over a few more loops to see if that changes things:
+Hmm. Suddenly the `C++` code is lagging. This is probably because assignment is highly optimized in R and there is some overhead to calling the `C++` function. Let's do it over a few more loops to see if that changes things:
 
 ```{r}
 microbenchmark::microbenchmark(
@@ -267,16 +316,23 @@ microbenchmark::microbenchmark(
 )
 ```
 
-Now we see the C++ code is catching up!
+Now we see the `C++` code is catching up!
 
 ### Demo 2: Linear Algebra 
 
-Follow the link: [`mvrt`](https://pegeler.github.io/mvrt)
+This second demo is a package that uses the Armadillo linear algebra library to create multivariate *t* distributed random matrices. 
+
+This was done as an exercise to explore performance gains for various tasks. It was also my first attempt at incorporating compiled code into an R package. Follow the link for the package vignette: [`mvrt`](https://pegeler.github.io/mvrt).
 
 ## Links
 
+### Software Pages
 - [`Rcpp`](https://github.com/RcppCore/Rcpp)
-- [Seamless R and C++ Integration with Rcpp](http://www.springer.com/us/book/9781461468677)
 - [`Armadillo`](https://github.com/conradsnicta/armadillo)
 - [`RcppArmadillo`](https://github.com/RcppCore/RcppArmadillo)
 
+### Instructional Resources
+- [Advanced R by Hadley Wickham](http://adv-r.had.co.nz/Rcpp.html)
+- [Rcpp Intro](http://www.mjdenny.com/Rcpp_Intro.html)
+- [Rcpp Tutorial by Dirk Eddelbuettel (PDF)](http://dirk.eddelbuettel.com/papers/rcpp_workshop_introduction_user2012.pdf)
+- [Seamless R and C++ Integration with Rcpp by Dirk Eddelbuettel (book)](http://www.springer.com/us/book/9781461468677)
