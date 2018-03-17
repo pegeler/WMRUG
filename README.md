@@ -10,6 +10,8 @@ Contents
 #### March 2018
 Introduces basic concepts of `C++` programming and the [`Rcpp`](https://github.com/RcppCore/Rcpp) API for writing high-performance `C++` code in R. Also points to the use-case of the [`mvrt`](https://github.com/pegeler/mvrt) package which uses the [`Armadillo`](https://github.com/conradsnicta/armadillo) `C++` linear algebra library (via [`RcppArmadillo`](https://github.com/RcppCore/RcppArmadillo)) to extend the functionality of `Rcpp`. This also touches on some of the considerations that need to be made when developing packages which include compiled code.
 
+See presentation [here](https://pegeler.github.io/WMRUG/rcpp.html).
+
 ---
 
 ### Mapping 
