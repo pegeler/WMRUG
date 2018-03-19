@@ -61,9 +61,9 @@ Now we can call that program:
 
 ### Quick sys-reqs note
 
-**R** is a *scripting* language and **`C`**/**`C++`** are *compiled* languages. This means that we can run any R code in an interpreter without any special preparation. However, any `C++` code we make must be compiled first into machine-readable instructions specific to our chip architecture. To do this, we need a special tool called a *compiler*. Standard Windows and Mac installs don't tend to have one handy---this is one reason why you download Windows binaries from CRAN by default. 
+Since R is a **scripting** language run in an interpreter, we can run any R code  without any special preparation. However, any `C++` code we make must be compiled first into machine-readable instructions specific to our chip architecture. To do this, we need a special tool called a *compiler*. Standard Windows and Mac installs don't tend to have one handy---this is one reason why you download Windows binaries from CRAN by default. 
 
-If you are a Windows user, you will probably need [Rtools](https://cran.r-project.org/bin/windows/Rtools/) to play along. Mac users need Xcode (I think). [`devtools`](https://github.com/r-lib/devtools) will let us know if we have everything we need. From R:
+If you are a Windows user, you will probably need to install Linux, Ubuntu is a safe bet ... ;), otherwise use [Rtools](https://cran.r-project.org/bin/windows/Rtools/) to play along. Mac users need Xcode (I think). [`devtools`](https://github.com/r-lib/devtools) will let us know if we have everything we need. From R:
 
 ```{r}
 # Check to make sure we have everything we need
@@ -105,7 +105,7 @@ hello
 
 ### C-R API
 
-TL;DR: Don't use it. The Rcpp API is a much easier way to write `C`/`C++` code for R. The exception might be if you are maintaining old code that is already in this ecosystem.
+TL;DR: Don't use it. ... because it's CRAPI ???? :) The Rcpp API is a much easier way to write `C`/`C++` code for R. The exception might be if you are maintaining old code that is already in this ecosystem.
 
 ### The Rcpp API 
 
@@ -189,7 +189,7 @@ $$
 
 So the first 10 numbers of the sequence will be $1,1,2,3,5,8,13,21,34,55$.
 
-This is fun because it is recursive. Therefore a programmer may take a recursive, memoized, or iterative approach to solving. We can use this to compare R and `C++` under different conditions.
+This is fun because it is recursive. Therefore a programmer may take a recursive, memorized, or iterative approach to solving. We can use this to compare R and `C++` under different conditions.
 
 First, let's define a function to verify that our outputs are correct:
 
@@ -208,6 +208,8 @@ verify_results <- function(FUN) {
 
 Now, let's do a simple recursive function. First in R:
 
+
+.... whoa, this is neat, I didn't know how to do recursive functions in R (except for with Reduce()), it might be worth it to explain what  `sys.function` is doing here?
 ```{r}
 fibR_rec <- function(n) {
   if (n <= 2)
