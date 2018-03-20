@@ -271,21 +271,6 @@ div.tocify {
 </tbody>
 </table>
 <p><em><strong>Note</strong>: These definitions are somewhat fluid. Examples are based on common usage of each language.</em></p>
-<div id="compiling-code-outside-of-r" class="section level3">
-<h3>Compiling code (outside of R)</h3>
-<p>If you have a compiler, creating object code is easy (but can get complicated!). Here is an example of how we turn a <code>C++</code> source code file into a machine-readable binary program. From the terminal:</p>
-<pre class="bash"><code># Compile C++ source file to binary program
-g++ heaps.cpp -o heaps</code></pre>
-<p>Now we can call that program:</p>
-<pre class="bash"><code># Get all possible permutations of the set {1,2,3} using Heap's algorithm
-./heaps 1 2 3
-##  1 2 3
-##  2 1 3
-##  3 1 2
-##  1 3 2
-##  2 3 1
-##  3 2 1</code></pre>
-</div>
 <div id="quick-sys-reqs-note" class="section level3">
 <h3>Quick sys-reqs note</h3>
 <p><strong>R</strong> is a <em>scripting</em> language and <strong><code>C</code></strong>/<strong><code>C++</code></strong> are <em>compiled</em> languages. This means that we can run any R code in an interpreter without any special preparation. However, any <code>C++</code> code we make must be compiled first into machine-readable instructions specific to our chip architecture. To do this, we need a special tool called a <em>compiler</em>. Standard Windows and Mac installs don’t tend to have one handy—this is one reason why you download Windows binaries from CRAN by default.</p>
@@ -298,6 +283,22 @@ devtools::has_devel()</code></pre>
 <pre><code>## [1] TRUE</code></pre>
 <p>If this returns <code class="r">FALSE</code>, go download Rtools or Xcode for Win or Mac, respectively.</p>
 </div>
+<div id="compiling-code-outside-of-r" class="section level3">
+<h3>Compiling code (outside of R)</h3>
+<p>If you have a compiler, creating object code is easy (but can get complicated!). Here is an example of how we turn a <code>C++</code> source code file into a machine-readable binary program. From the terminal:</p>
+<pre class="bash"><code># Compile C++ source file to binary program
+g++ heaps.cpp -o heaps</code></pre>
+<p>Now we can call that program from the terminal:</p>
+<pre class="bash"><code># Get all possible permutations of the set {1,2,3} using Heap's algorithm
+./heaps 1 2 3
+##  1 2 3
+##  2 1 3
+##  3 1 2
+##  1 3 2
+##  2 3 1
+##  3 2 1</code></pre>
+<p><em><strong>NOTE</strong>: At no point did we need to invoke an interpreter, as we do with R, Python, etc.</em></p>
+</div>
 </div>
 <div id="basic-c-syntax" class="section level2">
 <h2>Basic <code>C++</code> syntax</h2>
@@ -305,7 +306,7 @@ devtools::has_devel()</code></pre>
 <p>The contents of our <em><code>hello.cpp</code></em>:</p>
 <pre class="cpp"><code>// hello.cpp: A Hello World program for C++
 // The next line is a preprocessor directive, kind of like R's `library()`.
-#include &lt;stdio.h&gt;
+#include &lt;cstdio&gt;
 
 /* This is a multi-line comment. */
 int main (void) 
@@ -361,7 +362,7 @@ hello
 void Hello_World (std::string my_input) 
 {
   // This will write to the R console.
-  Rcpp::Rcout &lt;&lt; &quot;Hello &quot; &lt;&lt; my_input &lt;&lt; &quot;!&quot;;
+  Rcpp::Rcout &lt;&lt; &quot;Hello &quot; &lt;&lt; my_input &lt;&lt; &quot;!&quot; &lt;&lt; std::endl;
 }
 ')
 
@@ -450,11 +451,11 @@ int fibCpp_rec(const int n) {
   fibCpp_rec(20)
 )</code></pre>
 <pre><code>## Unit: nanoseconds
-##            expr     min      lq       mean    median        uq      max
-##    fibR_rec(10)   61726   65723   79393.69   69228.5   72913.0   926190
-##  fibCpp_rec(10)     992    1222    3381.61    1565.5    5288.0    11038
-##    fibR_rec(20) 8209259 8648940 9197662.89 9358606.5 9615276.0 11470006
-##  fibCpp_rec(20)   12593   13063   15618.91   13400.0   18426.5    31614
+##            expr     min        lq       mean    median        uq      max
+##    fibR_rec(10)   62158   64959.0   78211.32   66409.0   72212.5   908321
+##  fibCpp_rec(10)     985    1280.5    4138.72    1736.5    7391.5    26179
+##    fibR_rec(20) 8210515 8647271.0 9206183.60 9347091.0 9625065.5 10494225
+##  fibCpp_rec(20)   12607   12907.0   15665.03   13360.5   19057.0    22614
 ##  neval
 ##    100
 ##    100
@@ -504,18 +505,18 @@ return a;
   times = 1000
 )</code></pre>
 <pre><code>## Unit: nanoseconds
-##           expr min  lq     mean median   uq   max neval
-##    fibR_it(10) 883 944 1067.633    987 1051  6706  1000
-##  fibCpp_it(10) 828 898 1057.566    953 1044 16090  1000</code></pre>
+##           expr min  lq     mean median     uq   max neval
+##    fibR_it(10) 883 951 1050.179  987.5 1046.5 30526  1000
+##  fibCpp_it(10) 835 898 1003.798  950.0 1018.0  9885  1000</code></pre>
 <p>Hmm. Suddenly the <code>C++</code> code is lagging. This is probably because assignment is highly optimized in R and there is some overhead to calling the <code>C++</code> function. Let’s do it over a few more loops to see if that changes things:</p>
 <pre class="r"><code>microbenchmark::microbenchmark(
   fibR_it(30),
   fibCpp_it(30)
 )</code></pre>
 <pre><code>## Unit: nanoseconds
-##           expr  min   lq    mean median     uq   max neval
-##    fibR_it(30) 1926 2020 2133.58   2072 2146.5  6264   100
-##  fibCpp_it(30)  871  923 1192.35   1018 1125.0 14786   100</code></pre>
+##           expr  min   lq    mean median   uq   max neval
+##    fibR_it(30) 1924 2042 2207.11   2076 2152 11319   100
+##  fibCpp_it(30)  844  936 1136.71   1019 1111  9148   100</code></pre>
 <p>Now we see the <code>C++</code> code is catching up!</p>
 </div>
 </div>

@@ -37,28 +37,6 @@ Examples:
 
 *__Note__: These definitions are somewhat fluid. Examples are based on common usage of each language.*
 
-### Compiling code (outside of R)
-
-If you have a compiler, creating object code is easy (but can get complicated!). Here is an example of how we turn a `C++` source code file into a machine-readable binary program. From the terminal:
-
-```bash
-# Compile C++ source file to binary program
-g++ heaps.cpp -o heaps
-```
-
-Now we can call that program:
-
-```bash
-# Get all possible permutations of the set {1,2,3} using Heap's algorithm
-./heaps 1 2 3
-##  1 2 3
-##  2 1 3
-##  3 1 2
-##  1 3 2
-##  2 3 1
-##  3 2 1
-```
-
 ### Quick sys-reqs note
 
 **R** is a *scripting* language and **`C`**/**`C++`** are *compiled* languages. This means that we can run any R code in an interpreter without any special preparation. However, any `C++` code we make must be compiled first into machine-readable instructions specific to our chip architecture. To do this, we need a special tool called a *compiler*. Standard Windows and Mac installs don't tend to have one handy---this is one reason why you download Windows binaries from CRAN by default. 
@@ -72,6 +50,30 @@ devtools::has_devel()
 
 If this returns `FALSE`{.r}, go download Rtools or Xcode for Win or Mac, respectively.
 
+### Compiling code (outside of R)
+
+If you have a compiler, creating object code is easy (but can get complicated!). Here is an example of how we turn a `C++` source code file into a machine-readable binary program. From the terminal:
+
+```bash
+# Compile C++ source file to binary program
+g++ heaps.cpp -o heaps
+```
+
+Now we can call that program from the terminal:
+
+```bash
+# Get all possible permutations of the set {1,2,3} using Heap's algorithm
+./heaps 1 2 3
+##  1 2 3
+##  2 1 3
+##  3 1 2
+##  1 3 2
+##  2 3 1
+##  3 2 1
+```
+
+*__NOTE__: At no point did we need to invoke an interpreter, as we do with R, Python, etc.*
+
 ## Basic `C++` syntax
 
 `C++` syntax is different from R in many ways. However, the Rcpp API helps a lot to make `C++` code feel more R-like. This is not the venue to go over all the details of the `C++` language, but we will do a classic 'Hello World' example so you can get the flavor.
@@ -80,7 +82,7 @@ The contents of our *`hello.cpp`*:
 ```c++
 // hello.cpp: A Hello World program for C++
 // The next line is a preprocessor directive, kind of like R's `library()`.
-#include <stdio.h>
+#include <cstdio>
 
 /* This is a multi-line comment. */
 int main (void) 
@@ -137,7 +139,7 @@ Rcpp::cppFunction('
 void Hello_World (std::string my_input) 
 {
   // This will write to the R console.
-  Rcpp::Rcout << "Hello " << my_input << "!";
+  Rcpp::Rcout << "Hello " << my_input << "!" << std::endl;
 }
 ')
 
