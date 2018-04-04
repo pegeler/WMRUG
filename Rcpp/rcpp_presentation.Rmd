@@ -324,7 +324,7 @@ Now we see the `C++` code is catching up!
 
 This second demo is a package that uses the Armadillo linear algebra library to create multivariate *t* distributed random matrices. 
 
-This was done as an exercise to explore performance gains for various tasks. It was also my first attempt at incorporating compiled code into an R package. Follow the link for the package vignette: [`mvrt`](https://pegeler.github.io/mvrt).
+This was done as an exercise to explore performance gains for various tasks. It was also my first attempt at incorporating compiled code into an R package. Follow the link for the package vignette: [`mvrt`](https://pegeler.github.io/mvrt/articles/mvrt.html).
 
 ## Links
 
