@@ -1,7 +1,9 @@
 West Michigan R Users Group Code and Materials
 ==============================================
 
-These materials are my contributions to the [West Michigan R Users Group](https://www.meetup.com/West-Michigan-R-Users-Group/) meetups. [Click here](https://github.com/pegeler/WMRUG) for the GitHub repos. See the [main WMRUG github account](https://github.com/WestMichiganRUserGroup) for more code and presentations.
+These materials are my contributions to the [West Michigan R Users Group](https://www.meetup.com/West-Michigan-R-Users-Group/) meetups. 
+
+See the main WMRUG [github account](https://github.com/WestMichiganRUserGroup) for more code and presentations from other contributors. You can also check out their [blog](http://westmichiganrusergroup.github.io/) for meeting highlights!
 
 Contents
 --------
